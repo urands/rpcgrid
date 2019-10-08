@@ -4,10 +4,13 @@ class BaseProvider:
 
     # TODO: add suppor custom middlewares
 
-    def create(self, callback):
+    def create(self):
         raise NotImplementedError("Providers must implement this method")
 
-    def open(self, callback):
+    def open(self):
+        raise NotImplementedError("Providers must implement this method")
+
+    def close(self):
         raise NotImplementedError("Providers must implement this method")
 
     def is_connected(self):
@@ -26,7 +29,7 @@ class BaseProvider:
         self._response_callback = callback
 
     def call_method(self, task):
-        if self._response_callback is None:
+        if not self.is_connected():
             raise ConnectionError('Providers must be connected.')
         self.send(task)
         task.status = task.status.PENDING

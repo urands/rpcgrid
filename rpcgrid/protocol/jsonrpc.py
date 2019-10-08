@@ -17,11 +17,19 @@ class JsonRPC:
             return json.dumps({'id': task.id, 'result': task.result})
 
     def decode(self, data):
-        data = json.loads(data)
-        tsk = Task()
-        tsk.id = data.get('id')
-        tsk.method = data.get('method')
-        tsk.params = data.get('params')
-        tsk.result = data.get('result')
-        tsk.error = data.get('error')
-        return tsk
+        if data is None:
+            return None
+        if type(data) == list:
+            datas = list(map(json.loads, data))
+        else:
+            datas = [json.loads(data)]
+        tasks = []
+        for data in datas:
+            tsk = Task()
+            tsk.id = data.get('id')
+            tsk.method = data.get('method')
+            tsk.params = data.get('params')
+            tsk.result = data.get('result')
+            tsk.error = data.get('error')
+            tasks.append(tsk)
+        return tasks

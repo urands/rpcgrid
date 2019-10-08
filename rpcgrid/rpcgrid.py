@@ -16,7 +16,7 @@ def create(provider=None, protocol=None):
         protocol = JsonRPC()
     if provider is None:
         provider = LocalProvider(protocol)
-    return Server(provider)
+    return Server(provider).create()
 
 
 def open(provider=None, protocol=None):
@@ -24,4 +24,4 @@ def open(provider=None, protocol=None):
         protocol = JsonRPC()
     if provider is None:
         provider = LocalProvider(protocol)
-    return Client(provider)
+    return Client(provider).open()
