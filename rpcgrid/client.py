@@ -1,13 +1,26 @@
+import threading
+import time
+
 from rpcgrid.task import Task
 
 
 class Client:
     _provider = None
     _method = None
+    _requests = {}
+    _running = True
 
     def __init__(self, provider):
         self._provider = provider
-        self._provider.open(self.method_response)
+
+    def open(self):
+        self._provider.open()
+        threading.Thread(target=self.run, daemon=False).start()
+        return self
+
+    def close(self):
+        self._running = False
+        self._provider.close()
 
     @property
     def provider(self):
@@ -15,6 +28,21 @@ class Client:
 
     def method_response(self, task):
         pass
+
+    def run(self):
+        while threading.main_thread().is_alive() and self._running:
+            responses = self.provider.recv()
+            if responses is not None:
+                for response in responses:
+                    if response.id in self._requests:
+                        task = self._requests[response.id]
+                        task.result = response.result
+                        task.error = response.error
+                        task.status = response.status
+                        task.event.set()
+                        del self._requests[response.id]
+            else:
+                time.sleep(0.1)
 
     def __getattr__(self, item):
         if self._method is None:
@@ -25,19 +53,10 @@ class Client:
 
     def __call__(self, *args, **kwargs):
         if not self.provider.is_connected():
-            raise ConnectionError(f'Connection lost. {self._provider}')
+            self._provider.open()
+            if not self.provider.is_connected():
+                raise ConnectionError(f'Connection lost. {self._provider}')
         task = Task().create(self._method, *args, **kwargs)
         self._method = None
-        task = self.provider.call_method(task)
-        # TODO: Call is blocking
-        response = self.provider.recv()
-        if response is not None:
-            if task.id == response.id:
-                task.result = response.result
-                task.error = response.error
-                task.status = response.status
-                task.event.set()
-
-                return task
-        task.status = task.status.FAILED
-        return task
+        self._requests[task.id] = task
+        return self.provider.call_method(task)

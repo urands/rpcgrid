@@ -26,21 +26,30 @@ class GlobalMethods(Methods):
 
 class Server:
     _provider = None
+    _running = True
 
     def __init__(self, provider):
         self._provider = provider
-        self._provider.create(self.method_call)
+
+    def create(self):
+        self._provider.create()
+        return self
+
+    def close(self):
+        self._running = False
+        self._provider.close()
 
     @property
     def provider(self):
         return self._provider
 
     def run(self):
-        while threading.main_thread().is_alive():
-            task = self._provider.recv()
-            if task is not None:
-                response = self.method_call(task)
-                self.provider.send(response)
+        while threading.main_thread().is_alive() and self._running:
+            tasks = self._provider.recv()
+            if tasks is not None:
+                for task in tasks:
+                    response = self.method_call(task)
+                    self.provider.send(response)
 
     def method_call(self, task):
         methods = GlobalMethods()

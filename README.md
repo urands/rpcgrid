@@ -21,8 +21,11 @@ Remote procedure call package for any protocol and any transport layer.
 + debug/trace remote procedure call
 + metric support (GraphQL, InfluxDB)
 + celery support
++ batch rpc calls
 #### Protocol
 + gRPC/protobuf
++ GraphQL
++ compress binary
 #### Transport
 + Tornado
 + WebSocket

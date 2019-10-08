@@ -2,23 +2,23 @@ import threading
 import time
 from datetime import datetime
 
-import rpcgrid
+import rpcgrid as rpcg
 from rpcgrid.providers.socket import SocketProvider
 
 
 def create_server(p=None):
-    @rpcgrid.register
+    @rpcg.register
     def sum(x, y):
         return x + y
 
-    @rpcgrid.register
+    @rpcg.register
     def sleep(x):
         print('start sleep:', x, datetime.now())
         time.sleep(x)
         print('stop', x, datetime.now())
         return x
 
-    return rpcgrid.create(p)
+    return rpcg.create(p)
 
 
 def benchmark(rpcserver, rpcclient):
@@ -26,30 +26,45 @@ def benchmark(rpcserver, rpcclient):
     threading.Thread(target=rpcserver.run, daemon=False).start()
     time.sleep(0.1)
     print('Call sum:', rpcclient.sum(5, 6).wait())
-    t1 = rpcclient.sleep(0.5)
-    t2 = rpcclient.sleep(0.3)
-    print('t1:', t1.wait())
-    print('t2:', t2.wait())
     start = datetime.now()
-    for i in range(50000):
+    n = 1000
+    for i in range(n):
         c = rpcclient.sum(i, i).wait()
         if c != 2 * i:
             print('Error:', c, ' true:', 2 * i)
     t = datetime.now() - start
-    print('profile time:', t, 50000 / t.microseconds * 1000, 'it/ms')
+    print('profile time:', n, t, round(n / (t.microseconds/1000), 2), 'it/ms')
+
+    print('Simple batch operation:')
+    tsk = []
+    start = datetime.now()
+    for i in range(n):
+        tsk.append(rpcclient.sum(i, i))
+    t = datetime.now() - start
+    print('task created time:', n, t,
+          round(n / (t.microseconds/1000), 2), 'it/ms')
+
+    for i in range(n):
+        if tsk[i].wait() != 2 * i:
+            print('Error:', c, ' true:', 2 * i)
+    t = datetime.now() - start
+    print('profile time:', n, t, round(n / (t.microseconds/1000), 2), 'it/ms')
+
+    rpcclient.close()
+    rpcserver.close()
 
 
 if __name__ == '__main__':
     # Create RPC server
     socket_rpcserver = create_server(SocketProvider())
     # Open server provider indirect
-    socket_rpcclient = rpcgrid.open(SocketProvider('localhost:6300'))
+    socket_rpcclient = rpcg.open(SocketProvider('localhost:6300'))
 
     print('SOCKET TEST')
     benchmark(socket_rpcserver, socket_rpcclient)
 
     rpcserver = create_server()
-    rpcclient = rpcgrid.open()
+    rpcclient = rpcg.open()
 
     # Cross connection for localprovider
     rpcserver.provider.set_remote_provider(rpcclient)
@@ -60,4 +75,4 @@ if __name__ == '__main__':
 
     print('Done')
 
-    # time.sleep(1)
+    time.sleep(1)
