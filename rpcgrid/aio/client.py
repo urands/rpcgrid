@@ -55,7 +55,11 @@ class AsyncClient(Client):
             self._provider.open()
             if not self.provider.is_connected():
                 raise ConnectionError(f'Connection lost. {self._provider}')
+
         task = AsyncTask().create(self._method, *args, **kwargs)
+        if 'parallel' in kwargs:
+            task._parallel = kwargs['parallel']
+
         self._method = None
         self._requests[task.id] = task
         self._request_queue.put_nowait(task)

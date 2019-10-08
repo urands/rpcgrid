@@ -6,6 +6,8 @@ from rpcgrid.task import State, Task
 
 class AsyncTask(Task):
 
+    _parallel = True
+
     def create(self, method, *args, **kwargs):
         self.id = str(uuid4())
         self.method = method
