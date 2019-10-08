@@ -24,6 +24,7 @@ class Task:
     named_params = None
     status = State.CREATED
     error = None
+    _parallel = True
 
     @property
     def pending(self):
