@@ -47,12 +47,17 @@ class AsyncClient(Client):
                         task = self._requests[response.id]
                         task.result = response.result
                         task.error = response.error
-                        task.status = State.COMPLETED
+                        if task.error is None:
+                            self._requests[
+                                response.id
+                            ].status = State.COMPLETED
+                        else:
+                            self._requests[response.id].status = State.FAILED
                         task.event.set()
                         del self._requests[response.id]
                         if task._callback is not None:
                             asyncio.ensure_future(
-                                task._callback(task), loop=self._loop
+                                task.callback(task), loop=self._loop
                             )
 
     def __call__(self, *args, **kwargs):
@@ -66,5 +71,5 @@ class AsyncClient(Client):
         self._method = None
         task.status = State.PENDING
         self._requests[task.id] = task
-        self._request_queue.put_nowait(task)
-        return task
+        self._request_queue.put_nowait(self._requests[task.id])
+        return self._requests[task.id]

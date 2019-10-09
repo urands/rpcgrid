@@ -22,7 +22,10 @@ async def sleep(x):
 
 async def benchmark(rpcserver, rpcclient):
     print('Benchmark start server')
-    print('Call sum:', await rpcclient.sum(5, 6).wait())
+    t = rpcclient.suuiym(5, 6)
+    print('Call sum:', await t.wait())
+    print('Done:', t.success)
+    return
 
     rpf = 5454
 

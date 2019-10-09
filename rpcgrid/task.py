@@ -32,6 +32,10 @@ class Task:
         return self.status == State.PENDING
 
     @property
+    def success(self):
+        return self.status == State.COMPLETED
+
+    @property
     def done(self):
         return self.status in [State.COMPLETED, State.FAILED, State.TIMEOUT]
 

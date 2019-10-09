@@ -6,6 +6,9 @@ Remote procedure call package for any protocol and any transport layer.
 + async/await support
 + logging remote procedure call
 + server/client side remote procedure call
++ custom transport and protocols
++ block/non-block call
++ parallel rpc calls in async mode
 
 #### Protocol
 + JsonRPC protocol support
