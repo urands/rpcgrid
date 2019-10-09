@@ -3,6 +3,12 @@ from setuptools import setup, find_packages
 from importlib.machinery import SourceFileLoader
 
 
+try:
+    import pypandoc
+    long_description = pypandoc.convert('README.md', 'rst')
+except(IOError, ImportError):
+    long_description = open('README.md').read()
+
 module = SourceFileLoader(
     "version", os.path.join("rpcgrid", "version.py")
 ).load_module()
@@ -15,7 +21,7 @@ setup(
     author_email=module.team_email,
     license=module.package_license,
     description=module.package_info,
-    long_description=open("README.md").read(),
+    long_description=long_description,
     keywords='rpc microservice server rpcgrid ',
     platforms="all",
     classifiers=[
