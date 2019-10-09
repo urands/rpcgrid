@@ -1,13 +1,7 @@
 import os
-from setuptools import setup, find_packages
 from importlib.machinery import SourceFileLoader
 
-
-try:
-    import pypandoc
-    long_description = pypandoc.convert('README.md', 'rst')
-except(IOError, ImportError):
-    long_description = open('README.md').read()
+from setuptools import find_packages, setup
 
 module = SourceFileLoader(
     "version", os.path.join("rpcgrid", "version.py")
@@ -21,7 +15,7 @@ setup(
     author_email=module.team_email,
     license=module.package_license,
     description=module.package_info,
-    long_description=long_description,
+    long_description='RPCGrid',
     keywords='rpc microservice server rpcgrid ',
     platforms="all",
     classifiers=[
@@ -48,9 +42,7 @@ setup(
     },
     packages=find_packages(exclude=['tests']),
     package_data={'rpcgrid': ['py.typed']},
-    install_requires=[
-        'aio-pika>=6.0'
-    ],
+    install_requires=['aio-pika>=6.0'],
     python_requires=">3.5.*, <4",
     extras_require={
         'develop': [
@@ -60,6 +52,6 @@ setup(
             'isort',
             'black',
             'sphinx-autobuild',
-        ],
+        ]
     },
 )

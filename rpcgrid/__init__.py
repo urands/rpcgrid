@@ -13,4 +13,4 @@ if sys.version_info < (3, 5):
 
 # __version__ = pkg_resources.get_distribution("rpcgrid").version
 
-__version__ = "0.0.01"
+__version__ = "0.0.1"
