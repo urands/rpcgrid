@@ -1,6 +1,7 @@
 import asyncio
 
 from rpcgrid.server import GlobalMethods, Methods, Server
+from rpcgrid.task import State
 
 
 class AsyncMethods(Methods):
@@ -45,7 +46,7 @@ class AsyncServer(Server):
         return self._provider
 
     async def response_loop(self):
-        while (self._running):
+        while self._running:
             task = await self._response_queue.get()
             if task is not None:
                 await self.provider.send(task)
@@ -54,7 +55,7 @@ class AsyncServer(Server):
         self._response_queue.put_nowait(future.result())
 
     async def run(self):
-        while (self._running):
+        while self._running:
             tasks = await self._provider.recv()
             if tasks is not None:
                 for task in tasks:
@@ -71,11 +72,12 @@ class AsyncServer(Server):
         methods = GlobalMethods()
         try:
             task.result = await methods.call(task.method, *task.params)
-
+            task.status = State.COMPLETED
         except Exception as e:
             task.error = str(e)
-        finally:
-            task.method = None
+            task.status = State.FAILED
+            # if future is not None:
+            #    future.set_exception(e)
         if future is not None:
             future.set_result(task)
         return task

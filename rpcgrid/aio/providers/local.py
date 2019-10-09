@@ -36,8 +36,9 @@ class LocalProvider(AsyncBaseProvider):
 
     async def recv(self):
         try:
-            bindata = await asyncio.wait_for(self._queue.get(),
-                                             timeout=self._timeout)
+            bindata = await asyncio.wait_for(
+                self._queue.get(), timeout=self._timeout
+            )
             data = self._protocol.decode(bindata)
         except (asyncio.CancelledError, asyncio.TimeoutError):
             return None

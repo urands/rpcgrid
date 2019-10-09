@@ -8,8 +8,13 @@ pytest = "*"
 isort = "*"
 flake8 = "*"
 radon = "*"
+aio-pika = "*"
+black = "*"
 
 [packages]
 
 [requires]
 python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true
