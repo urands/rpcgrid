@@ -21,7 +21,11 @@ class JsonRPC:
         if data is None:
             return None
         if type(data) == list:
-            datas = list(map(json.loads, data))
+            try:
+                datas = list(map(json.loads, data))
+            except Exception as e:
+                print(data)
+                raise e
         else:
             datas = [json.loads(data)]
         tasks = []

@@ -3,22 +3,21 @@ import time
 from datetime import datetime
 
 import rpcgrid.aio as rpcg
+from rpcgrid.aio.providers.rabbit import RabbitProvider
 from rpcgrid.aio.providers.socket import SocketProvider
 
 
-async def create_server(p=None):
-    @rpcg.register
-    async def sum(x, y):
-        return x + y
+@rpcg.register
+async def sum(x, y):
+    return x + y
 
-    @rpcg.register
-    async def sleep(x):
-        print('start sleep:', x, datetime.now())
-        await asyncio.sleep(x)
-        print('stop', x, datetime.now())
-        return x
 
-    return await rpcg.create(p)
+@rpcg.register
+async def sleep(x):
+    # print('start sleep:', x, datetime.now())
+    await asyncio.sleep(x)
+    # print('stop', x, datetime.now())
+    return x
 
 
 async def benchmark(rpcserver, rpcclient):
@@ -89,24 +88,33 @@ async def benchmark(rpcserver, rpcclient):
 
 
 async def main(loop):
+
+    print('RABBIT TEST')
+    rabbit_rpcserver = await rpcg.create(RabbitProvider(loop=loop))
+    rabbit_rpcclient = await rpcg.open(RabbitProvider(loop=loop))
+
+    await benchmark(rabbit_rpcserver, rabbit_rpcclient)
+
+    await rabbit_rpcserver.close()
+    await rabbit_rpcclient.close()
+
+    print('SOCKET TEST')
+
     # Create RPC server
-    socket_rpcserver = await create_server(SocketProvider(loop=loop))
+    socket_rpcserver = await rpcg.create(SocketProvider(loop=loop))
     # Open server provider indirect
     socket_rpcclient = await rpcg.open(
         SocketProvider(connection='localhost:6300', loop=loop)
     )
 
-    print('SOCKET TEST')
-    t2 = socket_rpcclient.sleep(2, parallel=False)
-    print(await t2.wait())
-    # await benchmark(socket_rpcserver, socket_rpcclient)
+    await benchmark(socket_rpcserver, socket_rpcclient)
 
     await socket_rpcserver.close()
     await socket_rpcclient.close()
 
     print('TCP Done')
 
-    rpcserver = await create_server()
+    rpcserver = await rpcg.create()
     rpcclient = await rpcg.open()
 
     # Cross connection for localprovider
