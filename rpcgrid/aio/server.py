@@ -32,7 +32,7 @@ class AsyncServer(Server):
 
     async def create(self):
         await self._provider.create()
-        asyncio.ensure_future(self.run(), loop=self._loop)
+        # asyncio.ensure_future(self.run(), loop=self._loop)
         asyncio.ensure_future(self.response_loop(), loop=self._loop)
         return self
 
@@ -41,12 +41,8 @@ class AsyncServer(Server):
         await self._provider.close()
         await self._response_queue.put(None)
 
-    @property
-    def provider(self):
-        return self._provider
-
     async def response_loop(self):
-        while self._running:
+        while self.running:
             task = await self._response_queue.get()
             if task is not None:
                 await self.provider.send(task)
@@ -55,7 +51,7 @@ class AsyncServer(Server):
         self._response_queue.put_nowait(future.result())
 
     async def run(self):
-        while self._running:
+        while self.running:
             tasks = await self._provider.recv()
             if tasks is not None:
                 for task in tasks:

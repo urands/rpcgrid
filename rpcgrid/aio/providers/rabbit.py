@@ -1,7 +1,6 @@
 import asyncio
 
 import aio_pika
-
 from rpcgrid.aio.providers.base import AsyncBaseProvider
 from rpcgrid.protocol.jsonrpc import JsonRPC
 
