@@ -15,8 +15,31 @@ setup(
     author_email=module.team_email,
     license=module.package_license,
     description=module.package_info,
-    long_description='RPCGrid',
-    keywords='rpc microservice server rpcgrid ',
+    long_description='''
+# RPCGrid (development)
+
+Remote procedure call package for any protocol and any transport layer.
+
+## Features
++ async/await support
++ logging remote procedure call
++ server/client side remote procedure call
++ custom transport and protocols
++ block/non-block call
++ parallel rpc calls in async mode
+
+#### Protocol
++ JsonRPC protocol support
+
+
+#### Transport
++ Single/Multithreading remote procedure call
++ UDP/TCP socket remote procedure call 
++ RabbitMQ remote procedure call''',
+    keywords='rpc microservice server rpcgrid '
+             'async asyncio aio jsonrpc'
+             'rabbit rabbitmq service'
+             'remote procedure call',
     platforms="all",
     classifiers=[
         'License :: OSI Approved :: Apache Software License',
@@ -37,6 +60,7 @@ setup(
         'Programming Language :: Python :: Implementation :: CPython',
     ],
     project_urls={
+        'Documentation': 'https://github.com/urands/rpcgrid/',
         'Source': 'https://github.com/urands/rpcgrid/',
         'Tracker': 'https://github.com/urands/rpcgrid/issues/',
     },
