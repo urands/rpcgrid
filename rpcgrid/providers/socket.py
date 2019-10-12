@@ -59,7 +59,9 @@ class SocketProvider(BaseProvider):
                 self._clientsocket, addr = self._socket.accept()
             data = self._clientsocket.recv(24000).decode()
             if data[0] == '{' and data[-1] == '}':
-                data = list(map(lambda x: '{'+x+'}', data[1:-1].split('}{')))
+                data = list(
+                    map(lambda x: '{' + x + '}', data[1:-1].split('}{'))
+                )
         except ConnectionError:
             return None
 

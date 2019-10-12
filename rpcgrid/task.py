@@ -25,10 +25,19 @@ class Task:
     status = State.CREATED
     error = None
     _parallel = True
+    _callback = None
 
     @property
     def pending(self):
         return self.status == State.PENDING
+
+    @property
+    def success(self):
+        return self.status == State.COMPLETED
+
+    @property
+    def done(self):
+        return self.status in [State.COMPLETED, State.FAILED, State.TIMEOUT]
 
     def create(self, method, *args, **kwargs):
         self.id = str(uuid4())
@@ -39,10 +48,13 @@ class Task:
         self.status = State.PENDING
         return self
 
+    def callback(self, fn):
+        self._callback = fn
+        return self
+
     def wait(self, timeout=10):
         if (self.event.wait(timeout=timeout)) is True:
             self.event.clear()
-            self.status = State.COMPLETED
             return self.result
         self.status = State.TIMEOUT
         return self.result

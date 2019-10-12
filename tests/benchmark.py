@@ -27,13 +27,15 @@ def benchmark(rpcserver, rpcclient):
     time.sleep(0.1)
     print('Call sum:', rpcclient.sum(5, 6).wait())
     start = datetime.now()
-    n = 1000
+    n = 5000
     for i in range(n):
         c = rpcclient.sum(i, i).wait()
         if c != 2 * i:
             print('Error:', c, ' true:', 2 * i)
     t = datetime.now() - start
-    print('profile time:', n, t, round(n / (t.microseconds/1000), 2), 'it/ms')
+    print(
+        'profile time:', n, t, round(n / (t.microseconds / 1000), 2), 'it/ms'
+    )
 
     print('Simple batch operation:')
     tsk = []
@@ -41,14 +43,21 @@ def benchmark(rpcserver, rpcclient):
     for i in range(n):
         tsk.append(rpcclient.sum(i, i))
     t = datetime.now() - start
-    print('task created time:', n, t,
-          round(n / (t.microseconds/1000), 2), 'it/ms')
+    print(
+        'task created time:',
+        n,
+        t,
+        round(n / (t.microseconds / 1000), 2),
+        'it/ms',
+    )
 
     for i in range(n):
         if tsk[i].wait() != 2 * i:
             print('Error:', c, ' true:', 2 * i)
     t = datetime.now() - start
-    print('profile time:', n, t, round(n / (t.microseconds/1000), 2), 'it/ms')
+    print(
+        'profile time:', n, t, round(n / (t.microseconds / 1000), 2), 'it/ms'
+    )
 
     rpcclient.close()
     rpcserver.close()

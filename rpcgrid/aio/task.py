@@ -19,10 +19,10 @@ class AsyncTask(Task):
 
     async def wait(self, timeout=5):
         try:
-            await asyncio.wait_for(self.event.wait(),
-                                   timeout=timeout)
+            await asyncio.wait_for(self.event.wait(), timeout=timeout)
             self.event.clear()
-            self.status = State.COMPLETED
         except (asyncio.CancelledError, asyncio.TimeoutError):
             self.status = State.TIMEOUT
+            if self._callback is not None:
+                asyncio.ensure_future(self._callback(self))
         return self.result

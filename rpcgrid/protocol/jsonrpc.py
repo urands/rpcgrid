@@ -6,21 +6,29 @@ from rpcgrid.task import Task
 class JsonRPC:
     def encode(self, task):
         # TODO: add naming params
-        if task.method is not None:
-            return json.dumps(
-                {'id': task.id, 'method': task.method, 'params': task.params}
-            )
         if task.error is not None:
-            return json.dumps({'id': task.id, 'error': task.error})
+            return json.dumps({'jsonrpc': '2.0', 'id': task.id,
+                               'error': task.error})
 
         if task.result is not None:
-            return json.dumps({'id': task.id, 'result': task.result})
+            return json.dumps({'jsonrpc': '2.0', 'id': task.id,
+                               'result': task.result})
+
+        if task.method is not None:
+            return json.dumps(
+                {'jsonrpc': '2.0', 'id': task.id,
+                 'method': task.method, 'params': task.params}
+            )
 
     def decode(self, data):
         if data is None:
             return None
         if type(data) == list:
-            datas = list(map(json.loads, data))
+            try:
+                datas = list(map(json.loads, data))
+            except Exception as e:
+                print(data)
+                raise e
         else:
             datas = [json.loads(data)]
         tasks = []

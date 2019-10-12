@@ -40,6 +40,10 @@ class Server:
         self._provider.close()
 
     @property
+    def running(self):
+        return self._running
+
+    @property
     def provider(self):
         return self._provider
 
