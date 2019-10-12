@@ -1,4 +1,4 @@
-# RPCGrid (development)
+# RPCGrid
 
 Remote procedure call package for any protocol and any transport layer.
 ## Quickstart
