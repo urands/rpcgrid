@@ -56,6 +56,7 @@ Remote procedure call package for any protocol and any transport layer.
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
+        'Programming Language :: Python :: 3.8',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Programming Language :: Python :: Implementation :: CPython',
     ],
@@ -66,7 +67,6 @@ Remote procedure call package for any protocol and any transport layer.
     },
     packages=find_packages(exclude=['tests']),
     package_data={'rpcgrid': ['py.typed']},
-    install_requires=['aio-pika>=6.0'],
     python_requires=">3.5.*, <4",
     extras_require={
         'develop': [
