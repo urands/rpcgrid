@@ -5,9 +5,15 @@ description = "Fast implementation for remote procedure call (RPC)"
 authors = ["Iurii Bell <iurii.bellavin@gmail.com>"]
 license = "Apache"
 
+
+[tool.poetry.extras]
+    rabbit = ["aio-pika"]
+    all = ["aio-pika"]
+
 [tool.poetry.dependencies]
 python = "^3.6"
 rpcgrid = {path = "."}
+pytest
 
 [tool.poetry.dev-dependencies]
 
