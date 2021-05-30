@@ -13,7 +13,6 @@ license = "Apache"
 [tool.poetry.dependencies]
 python = "^3.6"
 rpcgrid = {path = "."}
-pytest
 
 [tool.poetry.dev-dependencies]
 
