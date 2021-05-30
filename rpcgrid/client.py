@@ -1,48 +1,60 @@
-import threading
-import time
+import asyncio
 
-from rpcgrid.task import Task
+from rpcgrid.task import AsyncTask, State
 
 
-class Client:
+class AsyncClient:
     _provider = None
     _method = None
-    _requests = {}
+    _requests: dict = {}
     _running = True
+    _request_queue: asyncio.Queue = asyncio.Queue()
+    _loop = None
 
-    def __init__(self, provider):
+    def __init__(self, provider, loop=None):
         self._provider = provider
+        if loop is None:
+            loop = asyncio.get_event_loop()
+        self._loop = loop
 
     def open(self):
         self._provider.open()
-        threading.Thread(target=self.run, daemon=False).start()
+        asyncio.ensure_future(self.request_loop(), loop=self._loop)
+        asyncio.ensure_future(self.response_loop(), loop=self._loop)
         return self
 
-    def close(self):
-        self._running = False
-        self._provider.close()
+        # await self._request_queue.put(None)
 
-    @property
-    def provider(self):
-        return self._provider
+    async def request_loop(self):
+        while self._running:
+            task = await self._request_queue.get()
+            if task is not None:
+                await self._provider.call_method(task)
+                task.status = State.RUNNING
+            self._request_queue.task_done()
+            # if self._request_queue.empty():
 
-    def method_response(self, task):
-        pass
-
-    def run(self):
-        while threading.main_thread().is_alive() and self._running:
-            responses = self.provider.recv()
+    async def response_loop(self):
+        while self._running:
+            responses = await self._provider.recv()
             if responses is not None:
                 for response in responses:
                     if response.id in self._requests:
                         task = self._requests[response.id]
                         task.result = response.result
                         task.error = response.error
-                        task.status = response.status
+                        if task.error is None:
+                            self._requests[
+                                response.id
+                            ].status = State.COMPLETED
+                        else:
+                            self._requests[response.id].status = State.FAILED
                         task.event.set()
                         del self._requests[response.id]
-            else:
-                time.sleep(0.1)
+                        if task._callback is not None:
+                            asyncio.ensure_future(
+                                task.callback(task), loop=self._loop
+                            )
 
     def __getattr__(self, item):
         if self._method is None:
@@ -52,11 +64,14 @@ class Client:
         return self
 
     def __call__(self, *args, **kwargs):
-        if not self.provider.is_connected():
-            self._provider.open()
-            if not self.provider.is_connected():
-                raise ConnectionError(f'Connection lost. {self._provider}')
-        task = Task().create(self._method, *args, **kwargs)
+
+        # log.debug('call client:', self._method, args, kwargs)
+        if not self._provider.is_connected():
+            raise ConnectionError(f'Connection lost. {self._provider}')
+
+        task = AsyncTask().create(self._method, *args, **kwargs)
         self._method = None
+        task.status = State.PENDING
         self._requests[task.id] = task
-        return self.provider.call_method(task)
+        self._request_queue.put_nowait(self._requests[task.id])
+        return self._requests[task.id]

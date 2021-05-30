@@ -1,2 +1,4 @@
 __pycache__
 .idea
+.pytest_cache
+rpcgrid.egg-info

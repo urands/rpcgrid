@@ -58,10 +58,12 @@ class SocketProvider(BaseProvider):
             if self._socket and self._clientsocket is None:
                 self._clientsocket, addr = self._socket.accept()
             data = self._clientsocket.recv(24000).decode()
-            if data[0] == '{' and data[-1] == '}':
-                data = list(
-                    map(lambda x: '{' + x + '}', data[1:-1].split('}{'))
-                )
+
+            # if len(data)>2 and data[0] == '{' and data[-1] == '}':
+            #    data = list(
+            #        map(lambda x: '{' + x + '}', data[1:-1].split('}{'))
+            #    )
+            # print(data)
         except ConnectionError:
             return None
 

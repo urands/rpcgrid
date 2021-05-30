@@ -28,9 +28,9 @@ class BaseProvider:
     def set_response_callback(self, callback):
         self._response_callback = callback
 
-    def call_method(self, task):
+    async def call_method(self, task):
         if not self.is_connected():
             raise ConnectionError('Providers must be connected.')
-        self.send(task)
+        await self.send(task)
         task.status = task.status.PENDING
         return task

@@ -20,6 +20,10 @@ setup(
 
 Remote procedure call package for any protocol and any transport layer.
 
+Easy implementation Remote procedure call (RPC) package for some protocol and some transport layer.
+
+
+
 ## Features
 + async/await support
 + logging remote procedure call
@@ -37,9 +41,9 @@ Remote procedure call package for any protocol and any transport layer.
 + UDP/TCP socket remote procedure call 
 + RabbitMQ remote procedure call''',
     keywords='rpc microservice server rpcgrid '
-             'async asyncio aio jsonrpc'
-             'rabbit rabbitmq service'
-             'remote procedure call',
+    'async asyncio aio jsonrpc'
+    'rabbit rabbitmq service'
+    'remote procedure call',
     platforms="all",
     classifiers=[
         'License :: OSI Approved :: Apache Software License',

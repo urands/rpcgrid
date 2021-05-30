@@ -1,5 +1,7 @@
+import asyncio
 import threading
 from enum import IntEnum, auto
+from timeit import default_timer as timer
 from uuid import uuid4
 
 
@@ -10,6 +12,68 @@ class State(IntEnum):
     RUNNING = auto()
     FAILED = auto()
     TIMEOUT = auto()
+
+
+class AsyncTask:
+
+    id = None
+    method = None
+    result = None
+    params = None
+    event = None
+    named_params = None
+    status = State.CREATED
+    error = None
+    _parallel = True
+    _callback = None
+    time = None
+
+    def create(self, method, *args, **kwargs):
+        self.id = str(uuid4())
+        self.method = method
+        self.params = args
+        self.named_params = kwargs
+        self.event = asyncio.Event()
+        self.status = State.PENDING
+        self.time = timer()
+        return self
+
+    async def wait(self, timeout=5):
+        try:
+            await asyncio.wait_for(self.event.wait(), timeout=timeout)
+            self.event.clear()
+            self.time = timer() - self.time
+        except (asyncio.CancelledError, asyncio.TimeoutError) as error:
+            self.status = State.TIMEOUT
+            if self._callback is not None:
+                asyncio.ensure_future(self._callback(self))
+            self.time = timer() - self.time
+            raise error
+        return self.result
+
+    @property
+    def pending(self):
+        return self.status == State.PENDING
+
+    @property
+    def success(self):
+        return self.status == State.COMPLETED
+
+    @property
+    def done(self):
+        return self.status in [State.COMPLETED, State.FAILED, State.TIMEOUT]
+
+    def callback(self, fn):
+        self._callback = fn
+        return self
+
+    def __repr__(self):
+        return (
+            f'AsyncTask #{self.id} : {self.method} {self.params} '
+            f'{self.named_params} Result: {self.result} '
+            f'Error: {self.error} status: {self.status} '
+            f'Time: {self.time}'
+        )
 
 
 class Task:

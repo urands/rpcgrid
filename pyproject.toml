@@ -1,0 +1,16 @@
+[tool.poetry]
+name = "rpcgrid"
+version = "1.0.1"
+description = "Fast implementation for remote procedure call (RPC)"
+authors = ["Iurii Bell <iurii.bellavin@gmail.com>"]
+license = "Apache"
+
+[tool.poetry.dependencies]
+python = "^3.6"
+rpcgrid = {path = "."}
+
+[tool.poetry.dev-dependencies]
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

@@ -5,7 +5,7 @@ package_license = "Apache License"
 
 team_email = 'iurii.bellavin@gmail.com'
 
-version_info = (0, 1, 0,'dev1')
+version_info = (1, 0, 1)
 
 __author__ = 'Iurii Bell'
 __version__ = ".".join(map(str, version_info))
