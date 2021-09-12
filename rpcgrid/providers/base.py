@@ -16,10 +16,10 @@ class BaseProvider:
     def is_connected(self):
         raise NotImplementedError("Providers must implement this method")
 
-    def send(self, task):
+    async def send(self, task):
         raise NotImplementedError("Providers must implement this method")
 
-    def recv(self):
+    async def recv(self):
         raise NotImplementedError("Providers must implement this method")
 
     def set_request_callback(self, callback):

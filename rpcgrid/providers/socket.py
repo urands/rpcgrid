@@ -1,3 +1,4 @@
+import asyncio
 import socket
 
 from rpcgrid.protocol.jsonrpc import JsonRPC
@@ -6,22 +7,36 @@ from rpcgrid.providers.base import BaseProvider
 
 class SocketProvider(BaseProvider):
     _protocol = None
-    _socket = None
+    _socket_reader = None
+    _socket_writer = None
     _clientsocket = None
     _timeout = 5
+
     _connected = False
 
-    def __init__(self, connection=None, port=6300, protocol=JsonRPC()):
+    def __init__(
+        self, host='127.0.0.1', port=6300, protocol=JsonRPC(), loop=None
+    ):
         self._protocol = protocol
-        self.connection = connection
+        # self.connection = connection
+
+        if loop is None:
+            self._loop = asyncio.get_event_loop()
+        else:
+            self._loop = loop
+
         self._port = port
+        self._host = host
 
     def is_connected(self):
         return self._connected
 
     # Server side
     def create(self):
-        self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        # self._socket_reader, self._socket_writer = \
+        #    await asyncio.start_server()
+
+        # socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.bind(('localhost', self._port))
         self._socket.listen()
         self._connected = True
@@ -71,3 +86,6 @@ class SocketProvider(BaseProvider):
             self._clientsocket = None
             return None
         return self._protocol.decode(data)
+
+    async def __client_connected(r, w):
+        await asyncio.sleep(1)

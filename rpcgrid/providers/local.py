@@ -35,12 +35,7 @@ class LocalProvider(BaseProvider):
         pass
 
     def close(self):
-        print('close local client')
-        # if self._remote_queue is not None:
-        #    self._remote_queue.put(None)
-        #    self._remote_queue = None
-        # self._queue.put(None)
-        # self._queue.join()
+        self._queue.join()
 
     # Any side
     async def send(self, task):
