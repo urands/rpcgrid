@@ -50,7 +50,7 @@ def test_socket():
 @rpcg.register
 async def sum(x, y):
     # sleep(3)
-    await asyncio.sleep(3)
+    # await asyncio.sleep(3)
     return x + y
 
 
@@ -59,18 +59,18 @@ logging.basicConfig(level=logging.DEBUG)
 
 
 async def worker(rpcclient):
-    for _ in range(1):
+    for i in range(1):
 
         # Sleep for the "sleep_for" seconds.
-        print('worker loop')
+        # print('worker loop')
 
-        tsk = rpcclient.sum(3, 4)
+        tsk = rpcclient.sum(3, i).callback(lambda r: print('done:', r))
 
         print('Result:', await tsk.wait(10))
 
         print('client:', tsk)
 
-        await asyncio.sleep(3)
+        # await asyncio.sleep(3)
 
 
 def test_server():
