@@ -1,12 +1,21 @@
 import rpcgrid as rpcg
-from rpcgrid.providers import SocketProvider
+import asyncio
+from rpcgrid.providers import SocketProvider, LocalProvider
 
 
 @rpcg.register
-def sum(x, y):
+async def sum(x: int, y: int ) -> int:
     return x + y
 
 
+async def main():
+    rpcserver = await rpcg.create(SocketProvider(port=1234))
+    rpcserver._loop.run_forever()
+
 # Create RPC TCP server on port 1234
-rpcserver = rpcg.create(SocketProvider(port=1234))
-rpcserver.run()
+
+if __name__ == '__main__':
+    print('Start server')
+    asyncio.run(main())
+
+

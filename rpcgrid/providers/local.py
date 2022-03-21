@@ -27,20 +27,22 @@ class LocalProvider(BaseProvider):
         remote._remote_queue = self._queue
 
     # Server side
-    def create(self):
+    async def create(self):
+        self.is_connected()
         pass
 
     # Client side
-    def open(self):
+    async def open(self):
         pass
 
-    def close(self):
-        print('close local client')
-        # if self._remote_queue is not None:
+    async def close(self):
+        log.info('close local client')
+        #if self._remote_queue is not None:
         #    self._remote_queue.put(None)
         #    self._remote_queue = None
         # self._queue.put(None)
-        # self._queue.join()
+        await self._queue.join()
+        log.info('close ok client')
 
     # Any side
     async def send(self, task):

@@ -2,24 +2,24 @@ class BaseProvider:
     _request_callback = None
     _response_callback = None
 
-    # TODO: add suppor custom middlewares
+    # TODO: add support custom middlewares
 
-    def create(self):
+    async def create(self):
         raise NotImplementedError("Providers must implement this method")
 
-    def open(self):
+    async def open(self):
         raise NotImplementedError("Providers must implement this method")
 
-    def close(self):
+    async def close(self):
         raise NotImplementedError("Providers must implement this method")
 
     def is_connected(self):
         raise NotImplementedError("Providers must implement this method")
 
-    def send(self, task):
+    async def send(self, task):
         raise NotImplementedError("Providers must implement this method")
 
-    def recv(self):
+    async def recv(self):
         raise NotImplementedError("Providers must implement this method")
 
     def set_request_callback(self, callback):

@@ -57,10 +57,10 @@ Easy implementation Remote procedure call (RPC) package for some protocol and so
         'Operating System :: Microsoft',
         'Programming Language :: Python',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
         'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.9',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Programming Language :: Python :: Implementation :: CPython',
     ],
@@ -71,7 +71,7 @@ Easy implementation Remote procedure call (RPC) package for some protocol and so
     },
     packages=find_packages(exclude=['tests']),
     package_data={'rpcgrid': ['py.typed']},
-    python_requires=">3.5.*, <4",
+    python_requires=">3.6.*, <4",
     extras_require={
         'develop': [
             'pytest',

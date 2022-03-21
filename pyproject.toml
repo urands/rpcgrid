@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "rpcgrid"
-version = "1.0.1"
+version = "1.1.2"
 description = "Fast implementation for remote procedure call (RPC)"
 authors = ["Iurii Bell <iurii.bellavin@gmail.com>"]
 license = "Apache"
@@ -11,8 +11,8 @@ license = "Apache"
     all = ["aio-pika"]
 
 [tool.poetry.dependencies]
-python = "^3.6"
-rpcgrid = {path = "."}
+python = "^3.7"
+#rpcgrid = {path = "."}
 
 [tool.poetry.dev-dependencies]
 

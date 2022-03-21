@@ -17,8 +17,8 @@ class AsyncClient:
             loop = asyncio.get_event_loop()
         self._loop = loop
 
-    def open(self):
-        self._provider.open()
+    async def open(self):
+        await self._provider.open()
         asyncio.ensure_future(self.request_loop(), loop=self._loop)
         asyncio.ensure_future(self.response_loop(), loop=self._loop)
         return self

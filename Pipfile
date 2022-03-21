@@ -3,17 +3,19 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
-[dev-packages]
-pytest = "*"
-isort = "*"
-flake8 = "*"
-radon = "*"
-aio-pika = "*"
-black = "*"
-poetry = "*"
-pytest-watch = "*"
-
 [packages]
+aio-pika = "~=6.8.0"
+
+
+[dev-packages]
+pytest = "~=6.2.5"
+isort = "~=5.9.3"
+flake8 = "~=3.9.2"
+radon = "~=5.1.0"
+black = "~=21.8b"
+poetry = "~=1.1.8"
+pytest-watch = "~=4.2.0"
+sphinx-autobuild = "~=2021.3.14"
 
 [requires]
 python_version = "3"

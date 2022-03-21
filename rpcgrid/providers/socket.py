@@ -20,7 +20,7 @@ class SocketProvider(BaseProvider):
         return self._connected
 
     # Server side
-    def create(self):
+    async def create(self):
         self._socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self._socket.bind(('localhost', self._port))
         self._socket.listen()
@@ -28,7 +28,7 @@ class SocketProvider(BaseProvider):
         self._clientsocket = None
 
     # Client side
-    def open(self):
+    async def open(self):
         # self.set_response_callback(callback)
         self.connection = self.connection.split(':')
         self.connection = (self.connection[0], int(self.connection[1]))
@@ -37,12 +37,12 @@ class SocketProvider(BaseProvider):
         self._connected = True
 
     # Any side
-    def send(self, task):
+    async def send(self, task):
         if self._clientsocket is not None:
-            data = self._protocol.encode(task)
+            data = await self._protocol.encode(task)
             self._clientsocket.send(data.encode())
 
-    def close(self):
+    async def close(self):
         if self._clientsocket is not None:
             self._clientsocket.close()
             self._clientsocket = None
@@ -51,7 +51,7 @@ class SocketProvider(BaseProvider):
             self._socket.close()
             self._socket = None
 
-    def recv(self):
+    async def recv(self):
         if not self.is_connected():
             raise ConnectionError(f'{self.connection} connection error')
         try:
@@ -70,4 +70,4 @@ class SocketProvider(BaseProvider):
         if data is None:
             self._clientsocket = None
             return None
-        return self._protocol.decode(data)
+        return await self._protocol.decode(data)

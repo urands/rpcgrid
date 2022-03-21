@@ -4,13 +4,13 @@ import sys
 # import pkg_resources # noqa: F401
 from rpcgrid.rpcgrid import create, open, register  # noqa: F401
 
-if sys.version_info < (3, 6):
+if sys.version_info < (3, 7):
     raise EnvironmentError(
-        "Python 3.6 or above is required. "
+        "Python 3.7 or above is required. "
         "Note that support for Python 3.6 will be test on actions"
     )
 
 
 # __version__ = pkg_resources.get_distribution("rpcgrid").version
 
-__version__ = "1.0.2"
+__version__ = "1.1.2"

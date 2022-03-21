@@ -36,6 +36,7 @@ class AsyncTask:
         self.event = asyncio.Event()
         self.status = State.PENDING
         self.time = timer()
+        self.task = asyncio.create_task(self.wait(None))
         return self
 
     async def wait(self, timeout=5):
@@ -74,6 +75,9 @@ class AsyncTask:
             f'Error: {self.error} status: {self.status} '
             f'Time: {self.time}'
         )
+
+    #def __call__(self, *args, **kwargs):
+    #    return self.wait(**kwargs)
 
 
 class Task:

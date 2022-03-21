@@ -14,7 +14,8 @@ class Base:
         self._loop = loop
 
     def __del__(self):
-        self.close()
+        pass
+        # self._loop.run_until_complete(self.close())
 
     @property
     def running(self):
@@ -24,12 +25,13 @@ class Base:
     def provider(self):
         return self._provider
 
-    def close(self, *args):
+    async def close(self, *args):
         self._running = False
-        self._provider.close()
-        print('provider close ok')
+        await self._provider.close()
+        log.info('provider close ok')
 
-    def run(self):
-        signal.signal(signal.SIGINT, self.close)
-        signal.signal(signal.SIGTERM, self.close)
-        self._loop.run_forever()
+    async def run(self):
+        # signal.signal(signal.SIGINT, self.close)
+        # signal.signal(signal.SIGTERM, self.close)
+        # self._loop.run_forever()
+        pass
