@@ -2,7 +2,7 @@ import sys
 
 # import warnings
 # import pkg_resources # noqa: F401
-from rpcgrid.rpcgrid import create, open, register  # noqa: F401
+from rpcgrid.rpcgrid import server, client, register  # noqa: F401
 
 if sys.version_info < (3, 6):
     raise EnvironmentError(
