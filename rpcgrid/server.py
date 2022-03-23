@@ -61,13 +61,14 @@ class GlobalMethods(Methods):
 
 
 class AsyncServer(Base):
-    _response_queue: asyncio.Queue = asyncio.Queue()
+    _response_queue: asyncio.Queue = None
+
     async def create(self, executor=None):
         await self._provider.create()
         # asyncio.ensure_future(self.run(), loop=self._loop)
+        self._response_queue = asyncio.Queue()
         asyncio.ensure_future(self.response_loop(), loop=self._loop)
         asyncio.ensure_future(self.receive_loop(), loop=self._loop)
-        self._executor = executor
         return self
 
     def push_response(self, future):
@@ -145,7 +146,7 @@ class ExecuterServerProvider(BaseProvider, AsyncServer):
                 "Connection error between client server not establish"
             )
         print('send task!!!!!')
-        # return await self._remote_queue.put(await self._protocol.encode(task))
+        #return await self._remote_queue.put(await self._protocol.encode(task))
 
     async def recv(self, timeout=None):
         print('recv task!!!!!')
@@ -172,8 +173,11 @@ class ExecuterServerProvider(BaseProvider, AsyncServer):
         self._recv_queue = mp.Queue()
         if executor == 'thread':
             from threading import Thread
+
             self._executors = [
-                Thread(target=ExecuterServerProvider.executer, args=(self,)) for _ in range(workers)]
+                Thread(target=ExecuterServerProvider.executer, args=(self,))
+                for _ in range(workers)
+            ]
         for t in self._executors:
             t.start()
 

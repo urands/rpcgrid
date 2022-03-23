@@ -9,8 +9,8 @@ class Base:
     def __init__(self, provider, loop=None):
         self._provider = provider
         self._running = True
-        if loop is None:
-            loop = asyncio.get_event_loop()
+        #if loop is None:
+        #    loop = asyncio.get_event_loop()
         self._loop = loop
 
     def __del__(self):

@@ -9,7 +9,7 @@ class AsyncClient:
     _method = None
     _requests: dict = {}
     _running = True
-    _request_queue: asyncio.Queue = asyncio.Queue()
+    _request_queue: asyncio.Queue = None
     _loop = None
 
     def __init__(self, provider, loop=None):
@@ -20,6 +20,7 @@ class AsyncClient:
 
     async def open(self):
         await self._provider.open()
+        self._request_queue = asyncio.Queue()
         asyncio.ensure_future(self.request_loop(), loop=self._loop)
         asyncio.ensure_future(self.response_loop(), loop=self._loop)
         return self

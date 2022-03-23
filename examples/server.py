@@ -9,7 +9,7 @@ async def sum(x: int, y: int ) -> int:
 
 
 async def main():
-    rpcserver = await rpcg.create(SocketProvider(port=1234))
+    rpcserver = await rpcg.server(SocketProvider(port=1234))
     rpcserver._loop.run_forever()
 
 # Create RPC TCP server on port 1234

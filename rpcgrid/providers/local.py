@@ -1,6 +1,6 @@
 import asyncio
-import queue
 from logging import getLogger
+
 
 from rpcgrid.protocol.jsonrpc import JsonRPC
 from rpcgrid.providers.base import BaseProvider
@@ -10,10 +10,10 @@ log = getLogger(__name__)
 
 class LocalProvider(BaseProvider):
     _protocol = None
-    _queue = None
-    _remote_queue = None
+    _queue: asyncio.Queue = None
+    _remote_queue: asyncio.Queue = None
 
-    def __init__(self, remote=None, protocol=JsonRPC()):
+    def __init__(self, remote=None, protocol=JsonRPC(), loop=None):
         self._protocol = protocol
         self._queue = asyncio.Queue()
         if remote is not None:
@@ -28,16 +28,18 @@ class LocalProvider(BaseProvider):
 
     # Server side
     async def create(self):
+
         self.is_connected()
         pass
 
     # Client side
     async def open(self):
+        # self._queue = asyncio.Queue()
         pass
 
     async def close(self):
         log.info('close local client')
-        #if self._remote_queue is not None:
+        # if self._remote_queue is not None:
         #    self._remote_queue.put(None)
         #    self._remote_queue = None
         # self._queue.put(None)
@@ -66,12 +68,12 @@ class LocalProvider(BaseProvider):
             )
             self._queue.task_done()
             data = await self._protocol.decode(data_raw)
-            # log.info(data)
+            log.info(data)
             return data
 
         except asyncio.TimeoutError:
             log.debug("Timeout for recv in local provider")
             return None
 
-    def get_queue(self) -> queue.Queue:
+    def get_queue(self) -> asyncio.Queue:
         return self._queue

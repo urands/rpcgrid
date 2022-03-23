@@ -1,17 +1,30 @@
+from typing import AnyStr, Callable, Coroutine, Optional, Type
+
 from rpcgrid.client import AsyncClient
+from rpcgrid.protocol.base import BaseProtocol
 from rpcgrid.protocol.jsonrpc import JsonRPC
+from rpcgrid.providers.base import BaseProvider
 from rpcgrid.providers.local import LocalProvider
-from rpcgrid.server import AsyncServer, GlobalAsyncMethods, ExecuterServerProvider
+from rpcgrid.server import (
+    AsyncServer,
+    ExecuterServerProvider,
+    GlobalAsyncMethods,
+)
 
 
-def register(func=None, name=None):
+def register(func: Callable, name: AnyStr = None):
     if name is not None:
         GlobalAsyncMethods().add(name, func)
     else:
         GlobalAsyncMethods().add(func.__name__, func)
 
 
-def create(provider=None, protocol=None, loop=None, executor: str = None):
+def server(
+    provider: Optional[BaseProvider] = None,
+    protocol: Optional[BaseProtocol] = None,
+    loop=None,
+    executor: str = None,
+) -> Coroutine:
     if protocol is None:
         protocol = JsonRPC()
     if provider is None:
@@ -22,8 +35,11 @@ def create(provider=None, protocol=None, loop=None, executor: str = None):
         return ExecuterServerProvider(provider, loop=loop).create(executor)
 
 
-
-def open(provider=None, protocol=None, loop=None):
+def client(
+    provider: Optional[BaseProvider] = None,
+    protocol: Optional[BaseProtocol] = None,
+    loop=None,
+) -> Coroutine:
     if protocol is None:
         protocol = JsonRPC()
     if provider is None:
