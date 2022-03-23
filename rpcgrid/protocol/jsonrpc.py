@@ -1,9 +1,9 @@
 import json
 
 from rpcgrid.task import AsyncTask
+from rpcgrid.protocol.base import BaseProtocol
 
-
-class JsonRPC:
+class JsonRPC(BaseProtocol):
     async def encode(self, task):
         # TODO: add naming params
         if task.error is not None:

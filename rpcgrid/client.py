@@ -1,4 +1,5 @@
 import asyncio
+from timeit import default_timer as timer
 
 from rpcgrid.task import AsyncTask, State
 
@@ -41,20 +42,23 @@ class AsyncClient:
                 for response in responses:
                     if response.id in self._requests:
                         task = self._requests[response.id]
+                        del self._requests[response.id]
                         task.result = response.result
                         task.error = response.error
                         if task.error is None:
-                            self._requests[
-                                response.id
-                            ].status = State.COMPLETED
+                            task.status = State.COMPLETED
                         else:
-                            self._requests[response.id].status = State.FAILED
+                            task.status = State.FAILED
+
+                        task.time = timer() - task.time
                         task.event.set()
-                        del self._requests[response.id]
                         if task._callback is not None:
-                            asyncio.ensure_future(
-                                task.callback(task), loop=self._loop
-                            )
+                            if asyncio.iscoroutinefunction(task._callback):
+                                asyncio.ensure_future(
+                                    task.callback(task), loop=self._loop
+                                )
+                            else:
+                                task._callback(task)
 
     def __getattr__(self, item):
         if self._method is None:

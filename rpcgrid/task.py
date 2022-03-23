@@ -43,12 +43,10 @@ class AsyncTask:
         try:
             await asyncio.wait_for(self.event.wait(), timeout=timeout)
             self.event.clear()
-            self.time = timer() - self.time
         except (asyncio.CancelledError, asyncio.TimeoutError) as error:
             self.status = State.TIMEOUT
             if self._callback is not None:
                 asyncio.ensure_future(self._callback(self))
-            self.time = timer() - self.time
             raise error
         return self.result
 
