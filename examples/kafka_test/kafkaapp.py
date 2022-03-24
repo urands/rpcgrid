@@ -6,7 +6,7 @@ import time
 import rpcgrid
 # from rpcgrid.base import Base
 # from rpcgrid.providers import SocketProvider
-from rpcgrid.providers import LocalProvider
+from rpcgrid.providers.kafka import KafkaProvider
 
 
 # import os
@@ -53,13 +53,10 @@ async def worker(rpcclient):
 async def create_connection():
     # loop = asyncio.get_event_loop()
     loop = None
-    server_provider = LocalProvider()
+    server_provider = KafkaProvider('task_topic', bootstrap_servers='localhost:9091')
+    client_provider = KafkaProvider('task_topic', bootstrap_servers='localhost:9091')
     rpcserver = await rpcgrid.server(server_provider, loop=loop, executor=None)
-    client_provider = LocalProvider(server_provider)
-    server_provider.set_remote_provider(client_provider)
-    # rpcclient = rpcgrid.open(SocketProvider('localhost:6300'))
     rpcclient = await rpcgrid.client(client_provider, loop=loop)
-    # asyncio.ensure_future(worker(rpcclient), loop=loop)
     return rpcserver, rpcclient
 
 

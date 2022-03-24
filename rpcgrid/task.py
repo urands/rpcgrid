@@ -14,7 +14,7 @@ class State(IntEnum):
     TIMEOUT = auto()
 
 
-class AsyncTask:
+class AsyncTask(): #
 
     id = None
     method = None
@@ -28,6 +28,11 @@ class AsyncTask:
     _callback = None
     time = None
 
+    def __init__(self):
+        pass
+        #coro = self.wait()
+        #super().__init__(coro)
+
     def create(self, method, *args, **kwargs):
         self.id = str(uuid4())
         self.method = method
@@ -37,6 +42,8 @@ class AsyncTask:
         self.status = State.PENDING
         self.time = timer()
         # self.task = asyncio.create_task(self.wait(None))
+
+
         return self
 
     async def wait(self, timeout=5):
@@ -66,6 +73,10 @@ class AsyncTask:
         self._callback = fn
         return self
 
+    def __await__(self, *args, **kwargs):
+        print('__await__')
+        return self.wait(**kwargs).__await__()
+
     def __repr__(self):
         return (
             f'AsyncTask #{self.id} : {self.method} {self.params} '
@@ -74,8 +85,9 @@ class AsyncTask:
             f'Time: {self.time}'
         )
 
-    #def __call__(self, *args, **kwargs):
-    #    return self.wait(**kwargs)
+    def __call__(self, *args, **kwargs):
+        print('gather!!!!')
+        return self.wait(**kwargs)
 
 
 class Task:
