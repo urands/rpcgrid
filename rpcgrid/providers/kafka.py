@@ -1,5 +1,7 @@
 import asyncio
 from logging import getLogger
+
+import aiokafka.errors
 from aiokafka import AIOKafkaProducer, AIOKafkaConsumer
 
 from rpcgrid.protocol.jsonrpc import JsonRPC
@@ -76,13 +78,15 @@ class KafkaProvider(BaseProvider):
                 self._kafka_consumer.getone(),
                 timeout=timeout,
             )
-            data = await self._protocol.decode(data_raw)
-            log.info(data)
+            # log.debug(data_raw)
+            data = await self._protocol.decode(data_raw.value)
+            # log.info(data)
             return data
 
         except asyncio.TimeoutError:
-            log.debug("Timeout for recv in local provider")
+            log.warning("Timeout for recv kafka")
+            return None
+        except aiokafka.errors.ConsumerStoppedError:
+            log.info("consumer stopped")
             return None
 
-    def get_queue(self) -> asyncio.Queue:
-        return self._queue

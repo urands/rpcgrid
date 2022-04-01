@@ -2,9 +2,10 @@ import asyncio
 from timeit import default_timer as timer
 
 from rpcgrid.task import AsyncTask, State
+from rpcgrid.base import Base
 
 
-class AsyncClient:
+class AsyncClient(Base):
     _provider = None
     _method = None
     _requests: dict = {}
@@ -12,8 +13,9 @@ class AsyncClient:
     _request_queue: asyncio.Queue = None
     _loop = None
 
-    def __init__(self, provider, loop=None):
+    def __init__(self, provider, loop=None, timeout=360):
         self._provider = provider
+        self._timeout = timeout
         if loop is None:
             loop = asyncio.get_event_loop()
         self._loop = loop
@@ -69,12 +71,11 @@ class AsyncClient:
         return self
 
     def __call__(self, *args, **kwargs):
-
         # log.debug('call client:', self._method, args, kwargs)
         if not self._provider.is_connected():
             raise ConnectionError(f'Connection lost. {self._provider}')
 
-        task = AsyncTask().create(self._method, *args, **kwargs)
+        task = AsyncTask(timeout = self._timeout).create(self._method, *args, **kwargs)
         self._method = None
         task.status = State.PENDING
         self._requests[task.id] = task

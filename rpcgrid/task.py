@@ -14,7 +14,7 @@ class State(IntEnum):
     TIMEOUT = auto()
 
 
-class AsyncTask(): #
+class AsyncTask():  #
 
     id = None
     method = None
@@ -28,10 +28,10 @@ class AsyncTask(): #
     _callback = None
     time = None
 
-    def __init__(self):
-        pass
-        #coro = self.wait()
-        #super().__init__(coro)
+    def __init__(self, timeout=None):
+        self._timeout = timeout
+        # coro = self.wait()
+        # super().__init__(coro)
 
     def create(self, method, *args, **kwargs):
         self.id = str(uuid4())
@@ -43,10 +43,9 @@ class AsyncTask(): #
         self.time = timer()
         # self.task = asyncio.create_task(self.wait(None))
 
-
         return self
 
-    async def wait(self, timeout=5):
+    async def wait(self, timeout=None):
         try:
             await asyncio.wait_for(self.event.wait(), timeout=timeout)
             self.event.clear()
@@ -74,8 +73,8 @@ class AsyncTask(): #
         return self
 
     def __await__(self, *args, **kwargs):
-        print('__await__')
-        return self.wait(**kwargs).__await__()
+        # print('__await__')
+        return self.wait(timeout=self._timeout).__await__()
 
     def __repr__(self):
         return (
@@ -86,7 +85,6 @@ class AsyncTask(): #
         )
 
     def __call__(self, *args, **kwargs):
-        print('gather!!!!')
         return self.wait(**kwargs)
 
 
