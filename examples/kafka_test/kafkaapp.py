@@ -30,7 +30,7 @@ async def sleep(x: int) -> str:
 
 
 logger = logging.getLogger()
-logging.basicConfig(level=logging.DEBUG)
+logging.basicConfig(level=logging.INFO)
 
 
 async def worker(rpcclient):
