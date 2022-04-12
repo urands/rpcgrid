@@ -13,7 +13,7 @@ class AsyncClient(Base):
     _request_queue: asyncio.Queue = None
     _loop = None
 
-    def __init__(self, provider, loop=None, timeout=360):
+    def __init__(self, provider, loop=None, timeout=10):
         self._provider = provider
         self._timeout = timeout
         if loop is None:

@@ -5,6 +5,7 @@ from rpcgrid.server import AsyncServer
 from fastapi import FastAPI
 import uvicorn
 import logging
+import asyncio
 from fastapi.openapi.docs import (
     get_redoc_html,
     get_swagger_ui_html,
@@ -15,7 +16,7 @@ from fastapi.staticfiles import StaticFiles
 logging.basicConfig(level=logging.INFO)
 
 app = FastAPI()
-app.mount("/static", StaticFiles(directory="static"), name="static")
+#app.mount("/static", StaticFiles(directory="static"), name="static")
 rpc: AsyncServer = None
 
 
@@ -46,13 +47,15 @@ async def redoc_html():
 
 @rpcgrid.register
 @app.get("/")
-def read_root():
+async def read_root():
     return {"Hello": "World"}
 
 
 @rpcgrid.register
 @app.get("/items/{item_id}")
-def read_item(item_id: int, q: Optional[str] = None):
+async def read_item(item_id: int, q: Optional[str] = None):
+    await asyncio.sleep(2)
+    # print('call read_item')
     return {"item_id": item_id, "q": q}
 
 
@@ -70,4 +73,8 @@ async def startup_event():
 
 
 if __name__ == "__main__":
-    uvicorn.run("kaf_fastapi:app", host="127.0.0.1", port=5000, log_level="info")
+    uvicorn.run("kaf_fastapi:app",
+                host="127.0.0.1",
+                port=5000,
+                log_level="debug",
+                debug=True, workers=1)

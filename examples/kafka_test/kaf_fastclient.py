@@ -8,7 +8,7 @@ import rpcgrid
 # from rpcgrid.base import Base
 # from rpcgrid.providers import SocketProvider
 from rpcgrid.providers.kafka import KafkaProvider
-
+from rpcgrid.providers.kafkaconfluence import KafkaConfluenceProvider
 
 logger = logging.getLogger()
 logging.basicConfig(level=logging.INFO)
@@ -24,7 +24,7 @@ async def worker(rpc):
     print('Second example')
     cnt = 10
     tasks = []
-    datas = '768676'*1000
+    datas = '768676'*1
     for i in range(cnt):
         tsk = rpc.read_item(i, datas)
         tasks.append(tsk)
@@ -37,13 +37,15 @@ async def worker(rpc):
     #    print('Task profile:', t.time)
     # print('client:', tsk)
     # await asyncio.sleep(1000)
-    await rpc.close()
+
 
     # return
     urls = [f'http://127.0.0.1:5000/items/{i}?q={datas}' for i in range(cnt)]
     start = time.time()
     r = await async_aiohttp_get_all(urls)
     print('REST time:', time.time() - start)
+
+    await rpc.close()
     # print(r)
 
 
@@ -61,10 +63,11 @@ async def async_aiohttp_get_all(urls):
 
 
 async def main():
+    # client_provider = KafkaConfluenceProvider('task_topic', bootstrap_servers='localhost:9091')
     client_provider = KafkaProvider('task_topic', bootstrap_servers='localhost:9091')
     rpcclient = await rpcgrid.client(client_provider)
 
     await worker(rpcclient)
 
 if __name__ == '__main__':
-    asyncio.run(main())
+    asyncio.run(main(), debug=True)
